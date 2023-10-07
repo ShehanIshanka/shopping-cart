@@ -1,2 +1,2 @@
-# shopping-cart
-RESTful API for shopping cart
+# expense-tracker
+Expense Tracker application
