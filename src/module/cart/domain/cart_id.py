@@ -4,5 +4,5 @@ from src.base.domain import UniqueId
 
 
 @dataclass
-class ProductId(UniqueId):
+class CartId(UniqueId):
     pass

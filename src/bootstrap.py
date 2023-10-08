@@ -1,7 +1,10 @@
 import logging
 
+from flask import Flask
 from src.base.infra.postgres.database import Database
 from src.config import Config
+from src.module.cart.repository import PostgresCartRepositoryImpl
+from src.module.cart.service import CartService
 from src.module.product.repository import PostgresProductRepositoryImpl
 from src.module.product.service import ProductService
 
@@ -22,5 +25,11 @@ def initialize_postgres_db(db_url: str) -> Database:
         raise e
 
 
-def initialize_product_service(db: Database) -> ProductService:
-    return ProductService(product_repository=PostgresProductRepositoryImpl(db=db))
+def initialize_services(db: Database, app: Flask) -> None:
+    product_repository = PostgresProductRepositoryImpl(db=db)
+    cart_repository = PostgresCartRepositoryImpl(db=db)
+
+    app.product_service = ProductService(product_repository=product_repository)
+    app.cart_service = CartService(
+        product_repository=product_repository, cart_repository=cart_repository
+    )
