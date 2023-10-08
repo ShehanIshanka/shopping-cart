@@ -12,7 +12,7 @@ class ProductModel(Base):
     __tablename__ = "product"
     id: Mapped[UUID] = mapped_column(primary_key=True, autoincrement=False)
     name: Mapped[str] = mapped_column(nullable=False)
-    description: Mapped[str] = mapped_column()
+    description: Mapped[str] = mapped_column(nullable=True)
     amount: Mapped[float] = mapped_column(nullable=False)
     created_time: Mapped[datetime] = mapped_column(nullable=False, default=func.now())
     last_modified_time: Mapped[datetime] = mapped_column(

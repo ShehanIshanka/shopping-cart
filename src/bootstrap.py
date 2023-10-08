@@ -1,5 +1,4 @@
 import logging
-from typing import Dict
 
 from src.base.infra.postgres.database import Database
 from src.config import Config

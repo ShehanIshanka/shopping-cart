@@ -6,8 +6,8 @@ from src.module.product.domain.product import Product
 class ProductMapper(Mapper):
     @staticmethod
     def to_domain(product_model: ProductModel) -> Product:
-        return Product.create(
-            product_id=product_model.id,
+        return Product(
+            id=product_model.id,
             name=product_model.name,
             description=product_model.description,
             amount=product_model.amount,
@@ -18,7 +18,7 @@ class ProductMapper(Mapper):
     @staticmethod
     def to_persistence(product: Product) -> ProductModel:
         return ProductModel(
-            product_id=product.id,
+            id=product.id.id,
             name=product.name,
             description=product.description,
             amount=product.amount.value,

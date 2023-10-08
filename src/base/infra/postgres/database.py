@@ -1,8 +1,9 @@
 from contextlib import contextmanager
 
 from sqlalchemy import create_engine, Engine
+from sqlalchemy.exc import NoResultFound
 from sqlalchemy.orm import declarative_base, Session, sessionmaker
-from src.base.exceptions import DatabaseError
+from src.base.exceptions import DatabaseError, NoResultFoundError
 
 Base = declarative_base()
 
@@ -22,6 +23,10 @@ class Database:
             session = sm()
             yield session
             session.commit()
+        except NoResultFound as e:
+            if session:
+                session.rollback()
+            raise NoResultFoundError(e)
         except Exception as e:
             if session:
                 session.rollback()

@@ -1,6 +1,4 @@
 from flask import Flask
-
-
 from src.bootstrap import bootstrap_database, initialize_product_service
 from src.routers.v1 import product
 

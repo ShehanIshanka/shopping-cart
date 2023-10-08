@@ -1,43 +1,107 @@
 import json
-import requests
-from typing import Optional
+import logging
 
+import requests
 from pydantic import ValidationError
-from src.base.exceptions import DatabaseError
-from src.base.infra.http import Response
-from src.module.product.domain.product import Product
+from src.base.exceptions import DatabaseError, NoResultFoundError
+from src.base.infra.http import HttpResponse, Response
 from src.module.product.repository import ProductRepository
-from src.module.product.schema import CreatProductPostRequestSchema
-from src.module.product.usecase import CreateProductUseCase
+from src.module.product.schema import CreatProductRequestSchema
+from src.module.product.usecase import (
+    CreateProductUseCase,
+    DeleteProductByIdUseCase,
+    FetchProductsUseCase,
+    FindProductByIdUseCase,
+)
 
 
 class ProductService:
-    def __init__(self, product_repository: ProductRepository):
+    def __init__(self, product_repository: ProductRepository) -> None:
         self._product_repository: ProductRepository = product_repository
 
     def create_product_record(self, data: json) -> Response:
         try:
-            data = CreatProductPostRequestSchema.model_validate(data)
+            data = CreatProductRequestSchema.model_validate(data)
+            response: Response = CreateProductUseCase(
+                product_repo=self._product_repository
+            ).execute(data)
         except ValidationError as e:
-            return Response(msg=str(e), status=requests.codes.bad_request)
-
-        try:
-            CreateProductUseCase(product_repo=self._product_repository).execute(data)
+            logging.exception(e)
+            return HttpResponse(
+                msg="Validation Error", status=requests.codes.bad_request
+            )
         except DatabaseError as e:
-            return Response(msg=str(e), status=requests.codes.bad_request)
+            logging.exception(e)
+            return HttpResponse(
+                msg="Database Error", status=requests.codes.server_error
+            )
 
-        return Response(msg="Success")
-
-    def fetch_product_by_id(self, product_id: str) -> Response:
-        pass
-        # try:
-        #     product_dto: ProductDTO = self.session.query(ProductDTO).filter_by(id=product_id).one()
-        # except NoResultFound:
-        #     return None
-        # except:
+        logging.info("Successfully created product record.")
+        return response
 
     def fetch_products(self) -> Response:
-        pass
+        try:
+            response: Response = FetchProductsUseCase(
+                product_repo=self._product_repository
+            ).execute()
+        except ValidationError as e:
+            logging.exception(e)
+            return HttpResponse(
+                msg="Validation Error", status=requests.codes.bad_request
+            )
+        except DatabaseError as e:
+            logging.exception(e)
+            return HttpResponse(
+                msg="Database Error", status=requests.codes.server_error
+            )
+
+        logging.info("Successfully fetched products.")
+        return response
+
+    def fetch_product_by_id(self, product_id: str) -> Response:
+        try:
+            response: Response = FindProductByIdUseCase(
+                product_repo=self._product_repository
+            ).execute(product_id)
+        except ValidationError as e:
+            logging.exception(e)
+            return HttpResponse(
+                msg="Validation Error", status=requests.codes.bad_request
+            )
+        except NoResultFoundError:
+            logging.info(f"No result found for product id: {product_id}")
+            return HttpResponse(msg="No result found.", status=requests.codes.not_found)
+        except DatabaseError as e:
+            logging.exception(e)
+            return HttpResponse(
+                msg="Database Error", status=requests.codes.server_error
+            )
+
+        logging.info(f"Successfully fetched product id: {product_id}")
+        return response
 
     def delete_product_by_id(self, product_id: str) -> Response:
-        pass
+        try:
+            response = DeleteProductByIdUseCase(
+                product_repo=self._product_repository
+            ).execute(product_id)
+        except ValidationError as e:
+            logging.exception(e)
+            return HttpResponse(
+                msg="Validation Error", status=requests.codes.bad_request
+            )
+        except DatabaseError as e:
+            logging.exception(e)
+            return HttpResponse(
+                msg="Database Error", status=requests.codes.server_error
+            )
+
+        if response:
+            logging.info(f"Successfully deleted product id: {product_id}")
+            return HttpResponse(msg="Success", status=requests.codes.ok)
+        else:
+            logging.info(f"Product id: {product_id} does not exist.")
+            return HttpResponse(
+                msg=f"Product id: {product_id} does not exist.",
+                status=requests.codes.ok,
+            )

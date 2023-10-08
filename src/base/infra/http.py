@@ -1,15 +1,14 @@
-from dataclasses import dataclass
-
-import requests
 from pydantic import BaseModel
 
 
-@dataclass
 class Request(BaseModel):
     pass
 
 
-@dataclass
 class Response(BaseModel):
+    pass
+
+
+class HttpResponse(Response):
     msg: str
-    status: int = requests.codes.ok
+    status: int

@@ -21,11 +21,10 @@ class Product:
         amount: float,
         created_time: datetime,
         last_modified_time: datetime,
-        product_id: Optional[str] = None,
         description: Optional[str] = None,
     ) -> "Product":
         return Product(
-            id=ProductId.create(product_id),
+            id=ProductId.create(),
             name=name,
             description=description,
             amount=Amount.create(amount),
