@@ -22,7 +22,7 @@ Following user stories are covered with the app.
 The app has two services; Product & Cart. 
 Product service can create and retrieve products. Cart service can create a cart, add or remove items to cart and checkout.
 
-Postman collection is available [here](./resorces/postman_collection.json).
+Postman collection is available [here](./resources/postman_collection.json).
 
 ## Running App with Docker
 
