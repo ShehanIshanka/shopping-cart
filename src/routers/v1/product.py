@@ -6,10 +6,6 @@ products = Blueprint("products", __name__, url_prefix="/v1")
 
 @products.route("/products", methods=["POST"])
 def create_product() -> Response:
-    # if request.method == "GET":
-    #     return jsonify(current_app.product_service.fetch_products(request.data).dict())
-    #
-    # if request.method == "POST":
     return jsonify(
         current_app.product_service.create_product_record(request.get_json()).dict()
     )
@@ -18,11 +14,6 @@ def create_product() -> Response:
 @products.route("/products", methods=["GET"])
 def fetch_products() -> Response:
     return jsonify(current_app.product_service.fetch_products().dict())
-
-    # if request.method == "POST":
-    #     return jsonify(
-    #         current_app.product_service.create_product_record(request.get_json()).dict()
-    #     )
 
 
 @products.route("/products/<product_id>", methods=["GET"])
