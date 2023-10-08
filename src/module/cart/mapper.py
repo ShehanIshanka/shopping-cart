@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import List
 
 from src.base.infra.mapper import Mapper
@@ -40,7 +41,15 @@ class CartItemMapper(Mapper):
         )
 
     @staticmethod
-    def to_persistence(cart: Cart) -> List[CartModel]:
+    def to_persistence(cart_id: str, item_id: str) -> CartItemModel:
+        return CartItemModel(
+            cart_id=cart_id,
+            item_id=item_id,
+            created_time=datetime.now(),
+        )
+
+    @staticmethod
+    def to_persistence_list(cart: Cart) -> List[CartItemModel]:
         return [
             CartItemModel(
                 cart_id=cart.id.id,

@@ -11,4 +11,4 @@ db = bootstrap_database()
 initialize_services(db, app)
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run()

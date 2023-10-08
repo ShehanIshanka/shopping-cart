@@ -1,13 +1,20 @@
 from datetime import datetime
 
-from src.base.infra.http import Request, Response
+
 from src.base.usecase import UseCase
 from src.module.cart.domain.cart import Cart
+from src.module.cart.domain.order import Order
 from src.module.cart.repository import CartRepository
 from src.module.cart.schema import (
+    AddItemToCartRequestSchema,
+    AddItemToCartResponseSchema,
+    CheckoutCartRequestSchema,
+    CheckoutCartResponseSchema,
     CreatCartRequestSchema,
     CreatCartResponseSchema,
-    FetchCartByIdResponseSchema,
+    FindCartByIdResponseSchema,
+    RemoveItemFromCartRequestSchema,
+    RemoveItemFromCartResponseSchema,
 )
 from src.module.product.repository import ProductRepository
 
@@ -52,15 +59,57 @@ class FindCartByIdUseCase(UseCase):
     def __init__(self, cart_repo: CartRepository) -> None:
         self.cart_repo = cart_repo
 
-    def execute(self, request: str) -> FetchCartByIdResponseSchema:
-        return FetchCartByIdResponseSchema(
+    def execute(self, request: str) -> FindCartByIdResponseSchema:
+        return FindCartByIdResponseSchema(
             cart=self.cart_repo.find_by_id(cart_id=request)
         )
 
 
-class DeleteCartByIdUseCase(UseCase):
+class AddItemToCartUseCase(UseCase):
     def __init__(self, cart_repo: CartRepository) -> None:
         self.cart_repo = cart_repo
 
-    def execute(self, request: str) -> bool:
-        return self.cart_repo.delete_by_id(cart_id=request)
+    def execute(
+        self, request: AddItemToCartRequestSchema
+    ) -> AddItemToCartResponseSchema:
+        self.cart_repo.add_item_to_cart(
+            cart_id=request.cart_id, item_id=request.item_id
+        )
+
+        return AddItemToCartResponseSchema(
+            cart=self.cart_repo.find_by_id(cart_id=request.cart_id)
+        )
+
+
+class RemoveItemFromCartUseCase(UseCase):
+    def __init__(self, cart_repo: CartRepository) -> None:
+        self.cart_repo = cart_repo
+
+    def execute(
+        self, request: RemoveItemFromCartRequestSchema
+    ) -> RemoveItemFromCartResponseSchema:
+        self.cart_repo.remove_item_from_cart(
+            cart_id=request.cart_id, item_id=request.item_id
+        )
+        return RemoveItemFromCartResponseSchema(
+            cart=self.cart_repo.find_by_id(cart_id=request.cart_id)
+        )
+
+
+class CheckoutCartUseCase(UseCase):
+    def __init__(self, cart_repo: CartRepository) -> None:
+        self.cart_repo = cart_repo
+
+    def execute(self, request: CheckoutCartRequestSchema) -> CheckoutCartResponseSchema:
+        cart: Cart = self.cart_repo.find_by_id(cart_id=request.cart_id)
+
+        order: Order = Order(
+            id=cart.id,
+            items=cart.items,
+            total=cart.total,
+            created_time=datetime.now(),
+            delivery_time=request.delivery_time,
+        )
+        self.cart_repo.create_order(order=order)
+
+        return CheckoutCartResponseSchema(order=order)
