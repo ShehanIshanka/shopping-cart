@@ -46,7 +46,7 @@ Point your browser to [http://localhost:5000/swagger](http://localhost:5000/swag
 #### 1. System Requirements
 
 ```shell
-make setup
+python 3.10
 ```
 
 #### 2. Install Requirements
