@@ -18,6 +18,7 @@ def initialize_postgres_db(db_url: str) -> Database:
     try:
         db: Database = Database(db_url=db_url)
         db.create_database()
+        db.load_data()
 
         return db
     except Exception as e:

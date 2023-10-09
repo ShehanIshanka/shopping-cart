@@ -22,6 +22,7 @@ Following user stories are covered with the app.
 The app has two services; Product & Cart. 
 Product service can create and retrieve products. Cart service can create a cart, add or remove items to cart and checkout.
 
+Example notebook is available [here](./resources/example.ipynb).
 Postman collection is available [here](./resources/postman_collection.json).
 
 ## Running App with Docker
@@ -79,6 +80,7 @@ Point your browser to [http://localhost:5000/swagger](http://localhost:5000/swag
 ## Notes
 
 * The API has been developed mostly for happy path flow. The probable improvements
+  * Enable Pagination
   * Better Error handling
   * Covering edge cases
     * Handle adding duplicate products

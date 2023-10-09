@@ -3,8 +3,10 @@ from datetime import datetime
 from typing import Dict, List
 
 from sqlalchemy import ForeignKey, func, JSON, UUID
-from sqlalchemy.orm import Mapped, mapped_column, relationship
-from src.base.infra.postgres.database import Base
+from sqlalchemy.orm import declarative_base, Mapped, mapped_column, relationship
+
+
+Base = declarative_base()
 
 
 class ProductModel(Base):

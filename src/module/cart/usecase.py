@@ -76,6 +76,8 @@ class AddItemToCartUseCase(UseCase):
             cart_id=request.cart_id, item_id=request.item_id
         )
 
+        # Missing update cart table
+
         return AddItemToCartResponseSchema(
             cart=self.cart_repo.find_by_id(cart_id=request.cart_id)
         )
@@ -91,6 +93,9 @@ class RemoveItemFromCartUseCase(UseCase):
         self.cart_repo.remove_item_from_cart(
             cart_id=request.cart_id, item_id=request.item_id
         )
+
+        # Missing update cart table
+
         return RemoveItemFromCartResponseSchema(
             cart=self.cart_repo.find_by_id(cart_id=request.cart_id)
         )
